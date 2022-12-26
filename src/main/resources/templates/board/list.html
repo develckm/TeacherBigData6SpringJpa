@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>게시글 리스트</title>
+</head>
+<div layout:fragment="contents">
+    <h1>게시글 리스트</h1>
+    <div class="uk-margin">
+        <label class="uk-form-label" for="rows">출력될 게시글 수 : </label>
+
+        <div uk-form-custom="target: > * > span:first-child">
+            <select th:onchange="location.href=`?rows=${this.value}`;"
+                    aria-label="Custom controls" id="rows">
+                <option value="5" th:selected="${paging.rows==5}">5</option>
+                <option value="10" th:selected="${paging.rows==10}">10</option>
+                <option value="15" th:selected="${paging.rows==15}">15</option>
+                <option value="20" th:selected="${paging.rows==20}">20</option>
+            </select>
+            <button class="uk-button uk-button-default" type="button" tabindex="-1">
+                <span></span>
+                <span uk-icon="icon: chevron-down"></span>
+            </button>
+        </div>
+    </div>
+
+    <div class="uk-overflow-auto">
+        <table class="uk-table uk-table-divider uk-table-hover">
+            <thead>
+                    <th:block th:with="active=${#strings.equals(paging.orderField,'board_no')}">
+                        <th th:with="direct=${( active && #strings.equals(paging.direct,'DESC') || paging.direct==null)?'ASC':'DESC'},
+                                     icon=${( active && #strings.equals(paging.direct,'ASC') )?'arrow-up':'arrow-down'}">
+                            <a th:classappend="${(active)?'':'uk-link-muted'}" th:href="@{''(orderField='board_no',direct=${direct})}">
+                                번호
+                                <span th:attr="uk-icon=${icon}"></span>
+                            </a>
+                        </th>
+                    </th:block>
+                    <th:block th:with="active=${#strings.equals(paging.orderField,'title')}">
+                        <th th:with="direct=${( active && #strings.equals(paging.direct,'DESC') || paging.direct==null)?'ASC':'DESC'},
+                                     icon=${( active && #strings.equals(paging.direct,'ASC') )?'arrow-up':'arrow-down'}">
+                            <a th:classappend="${(active)?'':'uk-link-muted'}" th:href="@{''(orderField='title',direct=${direct})}">
+                                제목
+                                <span th:attr="uk-icon=${icon}"></span>
+                            </a>
+                        </th>
+                    </th:block>
+                    <th:block th:with="active=${#strings.equals(paging.orderField,'user_id')}">
+                        <th th:with="direct=${( active && #strings.equals(paging.direct,'DESC') || paging.direct==null)?'ASC':'DESC'},
+                                     icon=${( active && #strings.equals(paging.direct,'ASC') )?'arrow-up':'arrow-down'}">
+                            <a th:classappend="${(active)?'':'uk-link-muted'}" th:href="@{''(orderField='user_id',direct=${direct})}">
+                                글쓴이
+                                <span th:attr="uk-icon=${icon}"></span>
+                            </a>
+                        </th>
+                    </th:block>
+                    <th:block th:with="active=${#strings.equals(paging.orderField,'post_time')}">
+                        <th th:with="direct=${( active && #strings.equals(paging.direct,'DESC') || paging.direct==null)?'ASC':'DESC'},
+                                     icon=${( active && #strings.equals(paging.direct,'ASC') )?'arrow-up':'arrow-down'}">
+                            <a th:classappend="${(active)?'':'uk-link-muted'}" th:href="@{''(orderField='post_time',direct=${direct})}">
+                                게시일
+                                <span th:attr="uk-icon=${icon}"></span>
+                            </a>
+                        </th>
+                    </th:block>
+                    <th:block th:with="active=${#strings.equals(paging.orderField,'views')}">
+                        <th th:with="direct=${( active && #strings.equals(paging.direct,'DESC') || paging.direct==null)?'ASC':'DESC'},
+                                     icon=${( active && #strings.equals(paging.direct,'ASC') )?'arrow-up':'arrow-down'}">
+                            <a th:classappend="${(active)?'':'uk-link-muted'}" th:href="@{''(orderField='views',direct=${direct})}">
+                                조회수
+                                <span th:attr="uk-icon=${icon}"></span>
+                            </a>
+                        </th>
+                    </th:block>
+                </tr>
+            </thead>
+            <tbody>
+            <tr th:each="board:${boardList}" style="cursor: pointer"
+                    th:onclick="location.href = [[@{'/board/{boardNo}/detail.do' (boardNo=${board.boardNo})}]]">
+                    <td th:text="${board.boardNo}"></td>
+                    <td th:text="${board.title}"></td>
+                    <td th:text="${board.userId}"></td>
+                    <td th:text="${board.postTime}"></td>
+                    <td th:text="${board.views}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <th:block th:insert="/pagination"></th:block>
+</div>
+</html>

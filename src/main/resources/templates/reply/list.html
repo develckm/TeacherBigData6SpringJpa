@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<th:block th:each="reply : ${replyList}">
+    <div  class="uk-margin-bottom uk-card uk-card-default uk-width-1-1">
+        <div th:id="'replyContainer'+${reply.replyNo}">
+            <div class="uk-card-header">
+                <div class="uk-grid-small uk-flex-middle" uk-grid>
+                    <div class="uk-width-expand">
+                        <h3 class="uk-card-title uk-margin-remove-bottom">
+                            <span th:text="${reply.replyNo}"></span>.
+                            <span th:text="${reply.title}"></span>
+                        </h3>
+                        <p class="uk-text-meta uk-margin-remove">
+                            <time datetime="" th:text="${#calendars.format(reply.postTime)}"></time>
+                        </p>
+                        <p class="uk-margin-remove">
+                            <span th:text="${reply.userId}"></span>
+                            참조하는 부모의 pk : <span th:text="${reply.fkReplyNo}"></span>
+                            <span></span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="uk-card-body uk-grid-small uk-flex-middle uk-padding" uk-grid>
+                <div th:if="${reply.getImgPath!=null}" class="uk-width-auto">
+                    <img class="uk-object-cover" style="width: 100px; height: 100px;"
+                         th:src="@{'/img/{imgPath}'(imgPath=${reply.getImgPath})}" alt="Avatar">
+                </div>
+                <p  class="uk-width-expand" th:text="${reply.contents}"></p>
+            </div>
+        </div>
+
+
+        <div class="uk-card-footer">
+            <th:block th:if="${session.loginUser!=null}">
+                <ul class="uk-breadcrumb">
+                    <th:block th:if="${ #strings.equals(session.loginUser.user_id,reply.userId)}">
+                        <li>
+                            <a href="javascript:void(0)"
+                               th:onclick="loadReplyModifyForm([[${reply.replyNo}]])"
+                               class="uk-button uk-button-text uk-text-warning">수정</a>
+                        </li>
+                        <li>
+                            <a href="javascript:void(0)"
+                               th:onclick="removeReply([[${reply.replyNo}]])"
+                               class="uk-button uk-button-text uk-text-danger">삭제</a>
+                        </li>
+                    </th:block>
+                    <li>
+                        <a href="javascript:void(0)"
+                           th:onclick="loadRegisterForm( [[${reply.replyNo}]] )"
+                           class="uk-button uk-button-text uk-text-primary">등록폼</a>
+                    </li>
+
+                </ul>
+            </th:block>
+            <div th:id="${'reReplyRegisterContainer'+reply.replyNo}"></div>
+            <!-- collection Fetch select 를 하면 레코드가 없어도 무조건 List 객체 생성 -->
+            <div th:if="${reply.replyList!=null && reply.replyList.size()>0}"
+                 th:with="replyList=${reply.replyList},paging=null"
+                 class="uk-grid-small uk-flex-top" uk-grid>
+                <span class="uk-width-auto" uk-icon="reply" style="transform: rotate(-180deg)"></span>
+                <div class="uk-width-expand uk-padding-remove-left" th:include="/reply/list"></div>
+            </div>
+        </div>
+    </div>
+</th:block>
+<th:block th:if="${paging!=null}" th:include="/pagination"></th:block>
+</html>
